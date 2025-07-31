@@ -1,4 +1,4 @@
-name: mongo-sharding-repl
+name: sharding-repl-cache
 
 services:
 
@@ -71,6 +71,14 @@ services:
     volumes:
       - shard2_secondary2_data:/data/db
 
+  redis:
+    image: redis:7-alpine
+    container_name: redis
+    ports:
+      - 6379:6379
+    volumes:
+      - redis_data:/data
+
   mongos:
     image: mongo:5.0
     container_name: mongos
@@ -93,9 +101,11 @@ services:
       - 8000:8080
     depends_on:
       - mongos
+      - redis
     environment:
       MONGODB_URL: mongodb://mongos:27017/somedb
       MONGODB_DATABASE_NAME: somedb
+      REDIS_URL: redis://redis:6379
 
 volumes:
   configdb_data:
@@ -105,3 +115,4 @@ volumes:
   shard2_data:
   shard2_secondary1_data:
   shard2_secondary2_data:
+  redis_data:
